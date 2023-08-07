@@ -1,0 +1,56 @@
+--- src/src/corelib/thread/qthread_unix.cpp	2018-09-13 07:25:10.000000000 +0300
++++ src.mod/src/corelib/thread/qthread_unix.cpp	2018-09-21 16:25:01.058662816 +0300
+@@ -60,7 +60,7 @@
+ # define SCHED_IDLE    5
+ #endif
+ 
+-#if defined(Q_OS_DARWIN) || !defined(Q_OS_ANDROID) && !defined(Q_OS_OPENBSD) && defined(_POSIX_THREAD_PRIORITY_SCHEDULING) && (_POSIX_THREAD_PRIORITY_SCHEDULING-0 >= 0)
++#if !defined(__ANDROID__) && (defined(Q_OS_DARWIN) || !defined(Q_OS_ANDROID) && !defined(Q_OS_OPENBSD) && defined(_POSIX_THREAD_PRIORITY_SCHEDULING) && (_POSIX_THREAD_PRIORITY_SCHEDULING-0 >= 0))
+ #define QT_HAS_THREAD_PRIORITY_SCHEDULING
+ #endif
+ 
+@@ -272,7 +272,7 @@
+ 
+ void *QThreadPrivate::start(void *arg)
+ {
+-#if !defined(Q_OS_ANDROID)
++#if !defined(Q_OS_ANDROID) && !defined(__ANDROID__)
+     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
+ #endif
+     pthread_cleanup_push(QThreadPrivate::finish, arg);
+@@ -314,7 +314,7 @@
+ #endif
+ 
+         emit thr->started(QThread::QPrivateSignal());
+-#if !defined(Q_OS_ANDROID)
++#if !defined(Q_OS_ANDROID) && !defined(__ANDROID__)
+         pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
+         pthread_testcancel();
+ #endif
+@@ -411,7 +411,7 @@
+     } else {
+         cores = (int)psd.psd_proc_cnt;
+     }
+-#elif (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)) || defined(Q_OS_FREEBSD)
++#elif (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID) && !defined(__ANDROID__)) || defined(Q_OS_FREEBSD)
+ #  if defined(Q_OS_FREEBSD) && !defined(CPU_COUNT_S)
+ #    define CPU_COUNT_S(setsize, cpusetp)   ((int)BIT_COUNT(setsize, cpusetp))
+     // match the Linux API for simplicity
+@@ -745,7 +745,7 @@
+ 
+ void QThread::terminate()
+ {
+-#if !defined(Q_OS_ANDROID)
++#if !defined(Q_OS_ANDROID) && !defined(__ANDROID__)
+     Q_D(QThread);
+     QMutexLocker locker(&d->mutex);
+ 
+@@ -788,7 +788,7 @@
+                "Current thread was not started with QThread.");
+ 
+     Q_UNUSED(thr);
+-#if defined(Q_OS_ANDROID)
++#if defined(Q_OS_ANDROID) || defined(__ANDROID__)
+     Q_UNUSED(enabled);
+ #else
+     pthread_setcancelstate(enabled ? PTHREAD_CANCEL_ENABLE : PTHREAD_CANCEL_DISABLE, nullptr);
