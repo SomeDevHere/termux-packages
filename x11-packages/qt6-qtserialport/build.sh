@@ -1,0 +1,14 @@
+TERMUX_PKG_HOMEPAGE=https://www.qt.io/
+TERMUX_PKG_DESCRIPTION="Qt Serial Port Library"
+TERMUX_PKG_LICENSE="LGPL-3.0"
+TERMUX_PKG_MAINTAINER="@termux"
+TERMUX_PKG_VERSION=6.5.2
+TERMUX_PKG_SRCURL="https://download.qt.io/official_releases/qt/6.5/${TERMUX_PKG_VERSION}/submodules/qtserialport-everywhere-src-${TERMUX_PKG_VERSION}.tar.xz"
+TERMUX_PKG_SHA256=063c54169aea6b303183b434637ad050e9f67d7f22bb3eff1ede1905eb2ccc9e
+TERMUX_PKG_DEPENDS="libc++, qt6-qtbase"
+TERMUX_PKG_BUILD_DEPENDS="qt6-qtbase-cross-tools"
+TERMUX_PKG_FORCE_CMAKE=true
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+-DCMAKE_TOOLCHAIN_FILE="${TERMUX_PREFIX}/lib/cmake/Qt6/qt.toolchain.cmake"
+-DCMAKE_SYSTEM_NAME=Linux
+"
